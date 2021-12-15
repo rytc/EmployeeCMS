@@ -15,7 +15,6 @@ function viewEmployees() {
 function viewDepartments() {
 
     Department.fetchAll(db, (departments) => {
-        console.log("\n");
         console.table(departments)
 
         mainMenu();
@@ -25,7 +24,10 @@ function viewDepartments() {
 }
 
 function viewRoles() {
-
+    Role.fetchAll(db, roles => {
+        console.table(roles)
+        mainMenu()
+    })
 }
 
 function addRole() {
