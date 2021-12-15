@@ -3,6 +3,7 @@ const inquirer = require('inquirer')
 const table = require('console.table')
 
 const Department = require('./lib/Department.js')
+const Role = require('./lib/Role.js')
 
 const db = mysql.createConnection('mysql://root:bobby@localhost:3306/employee_db')
 
@@ -53,15 +54,17 @@ function addRole() {
         });
 
         inquirer.prompt(roleMenu).then(req => {
-            let id = null
+            let deptId = null
             depts.forEach(dept => {
                 if(dept.name === req.department) {
-                    id = dept.id
+                    deptId = dept.id
                     return
                 }
             })
 
-            console.log(`Creating Role ${req.title} with a salary of $${req.salary} in ${req.department} (id:${id})`);
+            //console.log(`Creating Role ${req.title} with a salary of $${req.salary} in ${req.department} (id:${deptId})`);
+            Role.create(db, req.title, req.salary, deptId)
+            mainMenu()
         })
     })
 }
