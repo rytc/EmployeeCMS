@@ -125,13 +125,47 @@ function addEmployee() {
             })
 
             inquirer.prompt(employeeMenu).then(res => {
-                let roleId = null;
-                let managerId = null;
                 Employee.create(db, res.firstName, res.lastName, res.role, res.manager)
                 mainMenu()
             })
         })
 
+    })
+}
+
+function updateEmployeeRole() {
+    const menuEmployee = [
+        {
+            type: 'list',
+            message: "Which employee do you want to update the role for?",
+            name: 'employee',
+            choices: []
+        }
+    ]
+
+    const menuRole = [
+        {
+            type: 'list',
+            message: 'Which role should this employee be moved to?',
+            name: 'role',
+            choices: []
+        }
+    ]
+
+    Employee.fetchAll(db, employees => {
+        employees.forEach(employee => menuEmployee[0].choices.push({value:employee.id, name:`${employee.getFirstName()} ${employee.getLastName()}`}))
+        Role.fetchAll(db, roles => {
+            roles.forEach(role => {
+                menuRole[0].choices.push({value: role.id, name:role.title})
+            })
+
+            inquirer.prompt(menuEmployee).then(empl => {
+                inquirer.prompt(menuRole).then(rl => {
+                    Employee.updateRole(db, empl.employee, rl.role)
+                    mainMenu()
+                })
+            })
+        })
     })
 }
 
@@ -148,7 +182,8 @@ function mainMenu() {
             "View Roles",
             "Add Role",
             "Add Department",
-            "Add Employee"
+            "Add Employee",
+            "Update Employee Role"
         ]
     }
 ]
@@ -161,6 +196,7 @@ function mainMenu() {
             case "Add Role": addRole(); break
             case "Add Department": addDepartment(); break
             case "Add Employee": addEmployee(); break
+            case "Update Employee Role": updateEmployeeRole(); break
         }
     });
 
