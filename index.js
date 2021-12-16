@@ -112,7 +112,7 @@ function addEmployee() {
 
     Role.fetchAll(db, roles => {
         roles.forEach(role => {
-            employeeMenu[2].choices.push(role.getTitle())
+            employeeMenu[2].choices.push({value: role.id, name: role.getTitle()})
         })
 
         const concatEmployeeName = (employee) => {
@@ -127,22 +127,7 @@ function addEmployee() {
             inquirer.prompt(employeeMenu).then(res => {
                 let roleId = null;
                 let managerId = null;
-                roles.forEach(role => {
-                    if(res.role === role.title) {
-                        roleId = role.id
-                        return
-                    }
-                })
-
-                employees.forEach(manager => {
-                    let thisName = concatEmployeeName(manager);
-                    if(res.manager === manager.id) {
-                        managerId = manager.id
-                        return
-                    }
-                })
-                
-                Employee.create(db, res.firstName, res.lastName, roleId, managerId)
+                Employee.create(db, res.firstName, res.lastName, res.role, res.manager)
                 mainMenu()
             })
         })
