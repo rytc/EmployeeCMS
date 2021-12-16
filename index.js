@@ -4,7 +4,7 @@ const table = require('console.table')
 
 const Department = require('./lib/Department.js')
 const Role = require('./lib/Role.js')
-const Employee = require('/./lib/Employee.js')
+const Employee = require('./lib/Employee.js')
 
 const db = mysql.createConnection('mysql://root:bobby@localhost:3306/employee_db')
 
@@ -113,9 +113,33 @@ function addEmployee() {
             employeeMenu[2].choices.push(role.getTitle())
         })
 
+        const concatEmployeeName = (employee) => {
+            return `${employee.getFirstName()} ${employee.getLastName()}`
+        }
+
         Employee.fetchAll(db, employees => {
             employees.forEach(employee => {
-                employeeMenu[3].choices.push(`${employee.getFirstName()} ${employee.getLastName()}`)
+                employeeMenu[3].choices.push(concatEmployeeName(employee))
+            })
+
+            inquirer.prompt(employeeMenu).then(res => {
+                let roleId = null;
+                let managerId = null;
+                roles.forEach(role => {
+                    if(res.role === role.title) {
+                        roleId = role.id
+                        return
+                    }
+                })
+
+                employees.forEach(manager => {
+                    if(res.manager === concatEmployeeName(manager)) {
+                        managerId = manager.id
+                    }
+                })
+                
+                Employee.create(db, res.firstName, res.lastName, roleId, managerId)
+                mainMenu()
             })
         })
 
