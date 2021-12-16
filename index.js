@@ -4,6 +4,7 @@ const table = require('console.table')
 
 const Department = require('./lib/Department.js')
 const Role = require('./lib/Role.js')
+const Employee = require('/./lib/Employee.js')
 
 const db = mysql.createConnection('mysql://root:bobby@localhost:3306/employee_db')
 
@@ -13,14 +14,11 @@ function viewEmployees() {
 }
 
 function viewDepartments() {
-
     Department.fetchAll(db, (departments) => {
         console.table(departments)
 
         mainMenu();
     })
-    
-
 }
 
 function viewRoles() {
@@ -87,7 +85,41 @@ function addDepartment() {
 }
 
 function addEmployee() {
+    const employeeMenu = [
+        {
+            type: 'input',
+            name: 'firstName',
+            message: "First Name: "
+        },
+        {
+            type: "input",
+            name: "lastName",
+            message: "Last Name: "
+        },
+        {
+            type: "list",
+            name: "role",
+            choices: []
+        },
+        {
+            type: "list",
+            name: "manager",
+            choices: ["None"]
+        }
+    ]
 
+    Role.fetchAll(db, roles => {
+        roles.forEach(role => {
+            employeeMenu[2].choices.push(role.getTitle())
+        })
+
+        Employee.fetchAll(db, employees => {
+            employees.forEach(employee => {
+                employeeMenu[3].choices.push(`${employee.getFirstName()} ${employee.getLastName()}`)
+            })
+        })
+
+    })
 }
 
 function mainMenu() {
