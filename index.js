@@ -10,14 +10,16 @@ const db = mysql.createConnection('mysql://root:bobby@localhost:3306/employee_db
 
 
 function viewEmployees() {
-    console.log("You are viewing employees!"); 
+    Employee.fetchAllWithRDM(db, employees => {
+        console.table(employees)
+        mainMenu()
+    })
 }
 
 function viewDepartments() {
     Department.fetchAll(db, (departments) => {
         console.table(departments)
-
-        mainMenu();
+        mainMenu()
     })
 }
 
@@ -133,8 +135,11 @@ function addEmployee() {
                 })
 
                 employees.forEach(manager => {
-                    if(res.manager === concatEmployeeName(manager)) {
+                    let thisName = concatEmployeeName(manager);
+                    console.log(`Selected ${res.manager} checking with ${thisName}`)
+                    if(res.manager === thisName) {
                         managerId = manager.id
+                        return
                     }
                 })
                 

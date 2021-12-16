@@ -26,5 +26,16 @@ CREATE TABLE employee (
 );
 
 
-
-
+USE employee_db;
+SELECT 
+   employee.id, 
+   employee.first_name, 
+   employee.last_Name, 
+   role.title as title, 
+   dept.name AS department,
+   role.salary AS salary,
+   CONCAT(mgr.first_name, ' ', mgr.last_name) as manager
+FROM employee 
+   LEFT JOIN role ON employee.role_id = role.id 
+   LEFT JOIN department dept ON role.department_id = dept.id 
+   LEFT JOIN employee mgr ON employee.manager_id = mgr.id;
