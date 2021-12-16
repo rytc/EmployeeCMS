@@ -106,7 +106,7 @@ function addEmployee() {
         {
             type: "list",
             name: "manager",
-            choices: ["None"]
+            choices: [{value: null, name:"None"}]
         }
     ]
 
@@ -121,7 +121,7 @@ function addEmployee() {
 
         Employee.fetchAll(db, employees => {
             employees.forEach(employee => {
-                employeeMenu[3].choices.push(concatEmployeeName(employee))
+                employeeMenu[3].choices.push({ value:employee.id, name:concatEmployeeName(employee)})
             })
 
             inquirer.prompt(employeeMenu).then(res => {
@@ -136,8 +136,7 @@ function addEmployee() {
 
                 employees.forEach(manager => {
                     let thisName = concatEmployeeName(manager);
-                    console.log(`Selected ${res.manager} checking with ${thisName}`)
-                    if(res.manager === thisName) {
+                    if(res.manager === manager.id) {
                         managerId = manager.id
                         return
                     }
