@@ -121,7 +121,11 @@ function viewDepartmentBudget() {
         departments.forEach(dept => deptMenu[0].choices.push({value: dept.id, name:dept.name}));
         inquirer.prompt(deptMenu).then(res => {
             Role.fetchBudgetByDepartment(db, res.department, result => {
-                console.table(result)
+                if(result[0].budget != null) {
+                    console.table(result)
+                } else {
+                    console.log("There are no employees in this department.")
+                }
                 mainMenu()
             })
         })
@@ -249,7 +253,8 @@ async function confirm() {
             type: 'list',
             message: 'Are you sure?',
             name: 'sure',
-            choices: ['Yes', 'No']
+            choices: [{value: true, name:'Yes'}, 
+                        {value:false, name:'No'}]
         }])
     return sure
 }
@@ -268,7 +273,7 @@ function deleteEmployee() {
         employees.forEach(employee => menuOptions[0].choices.push({value: employee.id, name:`${employee.getFirstName()} ${employee.getLastName()}`}))
         inquirer.prompt(menuOptions).then(res => {
             confirm().then(sure => {
-                if(sure.sure === 'Yes') Employee.deleteEmployee(db, res.employee);
+                if(sure.sure) Employee.deleteEmployee(db, res.employee);
                 mainMenu()
             })
         })
@@ -289,8 +294,40 @@ function deleteRole() {
         roles.forEach(role => menuOptions[0].choices.push({value: role.id, name: role.title}))
         inquirer.prompt(menuOptions).then(res => {
             confirm().then(sure => {
-                Employee.removeRoleFromAll(db, res.role);
-                Role.deleteRole(db, res.role);
+                if(sure.sure) {
+                    Employee.removeRoleFromAll(db, res.role);
+                    Role.deleteRole(db, res.role);
+                }
+                mainMenu()
+            })        
+        })
+    })
+}
+
+function deleteDepartment() {
+    const menuOptions = [
+        {
+            type: 'list',
+            message: 'Which department do you want to delete? (This will also remove the roles)',
+            name: 'department',
+            choices: []
+        }
+    ]
+
+    Department.fetchAll(db, departments => {
+        departments.forEach(dept => menuOptions[0].choices.push({value: dept.id, name: dept.name}))
+        inquirer.prompt(menuOptions).then(res => {
+            confirm().then(sure => {
+                if(sure.sure) {
+                    Role.fetchRolesByDepartment(db, res.department, roles => {
+                        roles.forEach(role => {
+                            URLSearchParams.removeRoleFromAll(db, role.id);
+                        })
+                    });
+                    
+                    Role.deleteRoleByDepartment(db, res.department)
+                    Department.deleteDepartment(db, res.department)
+                }
                 mainMenu()
             })        
         })
@@ -311,7 +348,8 @@ function mainMenu() {
         { name: "Update Employee Role", run: updateEmployeeRole },
         { name: "Update Employee Manager", run: updateEmployeeManager },
         { name: "Delete Employee", run: deleteEmployee },
-        { name: "Delete Role", run: deleteRole }
+        { name: "Delete Role", run: deleteRole },
+        { name: "Delete Department", run:deleteDepartment}
     ]
 
     const mainMenu = [
