@@ -17,7 +17,28 @@ function viewEmployees() {
 }
 
 function viewEmployeesByManager() {
-    mainMenu()
+    
+
+    Employee.fetchAllManagers(db, managers => {
+        let menuOptions = [
+            {
+                type:"list",
+                name: "manager",
+                message: "Select a manager: ",
+                choices: []
+            }
+        ];
+        managers.forEach((mgr, index) => menuOptions[0].choices.push({value: mgr.id, name:`${mgr.getFirstName()} ${mgr.getLastName()}`}))
+
+        inquirer.prompt(menuOptions).then(res => {
+            Employee.fetchAllByManager(db, res.manager, employees => {
+                console.table(employees)
+                mainMenu()
+            })
+
+        })
+
+    })
 }
 
 function viewDepartments() {
@@ -240,7 +261,7 @@ function mainMenu() {
         },
         {
             name: "Update Employee Role",
-            run: updateEmployee
+            run: updateEmployeeRole
         },
         {
             name: "Update Employee Manager",
@@ -257,7 +278,7 @@ function mainMenu() {
         }
     ]
 
-    mainMenuOptions.forEach((opt, index) => mainMenu.choices.push({value:index, name: opt.name}));
+    mainMenuOptions.forEach((opt, index) => mainMenu[0].choices.push({value:index, name: opt.name}));
     inquirer.prompt(mainMenu).then(res => mainMenuOptions[res.menuOption].run());
 }
 

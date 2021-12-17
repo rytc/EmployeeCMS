@@ -39,3 +39,8 @@ FROM employee
    LEFT JOIN role ON employee.role_id = role.id 
    LEFT JOIN department dept ON role.department_id = dept.id 
    LEFT JOIN employee mgr ON employee.manager_id = mgr.id;
+
+use employee_db;
+SELECT DISTINCT employee.id, employee.first_name, employee.last_name
+FROM employee
+	INNER JOIN employee sub ON sub.manager_id = employee.id
