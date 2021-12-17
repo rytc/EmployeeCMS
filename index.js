@@ -169,6 +169,38 @@ function updateEmployeeRole() {
     })
 }
 
+function updateEmployeeManager() {
+    const menuEmployee = [
+        {
+            type: 'list',
+            message: "Which employee do you want to update the manager for?",
+            name: 'employee',
+            choices: []
+        }
+    ]
+
+    const menuManager = [
+        {
+            type: 'list',
+            message: 'Which manager should this employee have?',
+            name: 'manager',
+            choices: []
+        }
+    ]
+
+    Employee.fetchAll(db, employees => {
+        employees.forEach(employee => menuEmployee[0].choices.push({value:employee.id, name:`${employee.getFirstName()} ${employee.getLastName()}`}))
+        employees.forEach(employee => menuManager[0].choices.push({value:employee.id, name:`${employee.getFirstName()} ${employee.getLastName()}`}))
+
+        inquirer.prompt(menuEmployee).then(empl => {
+            inquirer.prompt(menuManager).then(mgr => {
+                Employee.updateManager(db, empl.employee, mgr.manager)
+                mainMenu()
+            })
+        })
+    })
+}
+
 function mainMenu() {
     const mainMenu = [
         {
