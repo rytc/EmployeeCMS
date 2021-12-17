@@ -6,6 +6,8 @@
 A simple command line NodeJS application to manage employees by role, department and by manager. The data is backed by MySQL. While this project was for homework, it 
 gave me a chance to use more complex SQL queries and learn how to better structure a larger Javascript program.
 
+[Youtube Demonstration](https://youtu.be/IXwiTw_uLqE)
+
 ### Features:
 - Add departments, roles, and employees
 - View departments, roles, and employees
