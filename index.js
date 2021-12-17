@@ -170,37 +170,39 @@ function updateEmployeeRole() {
 }
 
 function mainMenu() {
-
     const mainMenu = [
-    {
-        type: "list",
-        name: "menuOption",
-        message: "What would you like to do?",
-        choices: [
-            "View Employees",
-            "View Departments",
-            "View Roles",
-            "Add Role",
-            "Add Department",
-            "Add Employee",
-            "Update Employee Role"
-        ]
-    }
-]
+        {
+            type: "list",
+            name: "menuOption",
+            message: "What would you like to do?",
+            choices: [
+                {value: 0, name: "View Employees"},
+                {value: 1, name: "View Departments"},
+                {value: 2, name: "View Roles"},
+                {value: 3, name: "Add Role"},
+                {value: 4, name: "Add Department"},
+                {value: 5, name: "Add Employee"},
+                {value: 6, name: "Update Employee Role"},
+                {value: 7, name: "Update Employee Manager"}
+            ]
+        }
+    ]
 
     inquirer.prompt(mainMenu).then(res => {
         switch(res.menuOption) {
-            case "View Employees": viewEmployees(); break
-            case "View Departments": viewDepartments(); break
-            case "View Roles": viewRoles(); break
-            case "Add Role": addRole(); break
-            case "Add Department": addDepartment(); break
-            case "Add Employee": addEmployee(); break
-            case "Update Employee Role": updateEmployeeRole(); break
+            case 0: viewEmployees(); break
+            case 1: viewDepartments(); break
+            case 2: viewRoles(); break
+            case 3: addRole(); break
+            case 4: addDepartment(); break
+            case 5: addEmployee(); break
+            case 6: updateEmployeeRole(); break
+            case 7: updateEmployeeManager(); break;
         }
     });
 
 }
+
 
 db.connect(() => {
     mainMenu()
