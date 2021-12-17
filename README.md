@@ -23,10 +23,11 @@ gave me a chance to use more complex SQL queries and learn how to better structu
 - [Questions](#Questions)
 
 ## Installation
-`git clone https://github.com/rytc/EmployeeCMS`
-- Requires MySQL installed and initialized with `db_structure.sql`
+1. `git clone https://github.com/rytc/EmployeeCMS`
+2. `npm install` to get mysql2, Inquirer, and console.table
 
 ## Usage
+Requires MySQL installed and initialized with `db_structure.sql`
 `npm start` or `node index.js`
 
 ## License
