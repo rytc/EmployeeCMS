@@ -43,4 +43,22 @@ FROM employee
 use employee_db;
 SELECT DISTINCT employee.id, employee.first_name, employee.last_name
 FROM employee
-	INNER JOIN employee sub ON sub.manager_id = employee.id
+	INNER JOIN employee sub ON sub.manager_id = employee.id;
+    
+use employee_db;
+SELECT SUM(role.salary),
+department.name AS department
+FROM role
+LEFT JOIN department ON department.id = role.department_id
+WHERE role.department_id = 3
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    

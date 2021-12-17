@@ -17,8 +17,6 @@ function viewEmployees() {
 }
 
 function viewEmployeesByManager() {
-    
-
     Employee.fetchAllManagers(db, managers => {
         let menuOptions = [
             {
@@ -35,9 +33,7 @@ function viewEmployeesByManager() {
                 console.table(employees)
                 mainMenu()
             })
-
         })
-
     })
 }
 
@@ -108,6 +104,27 @@ function addDepartment() {
     inquirer.prompt(deptMenu).then(res => {
         Department.create(db, res.name);
         mainMenu()
+    })
+}
+
+function viewDepartmentBudget() {
+    const deptMenu = [
+        {
+            type: 'list',
+            name: 'department',
+            message: 'Select a department: ',
+            choices: []
+        }
+    ]
+
+    Department.fetchAll(db, departments => {
+        departments.forEach(dept => deptMenu[0].choices.push({value: dept.id, name:dept.name}));
+        inquirer.prompt(deptMenu).then(res => {
+            Role.fetchBudgetByDepartment(db, res.department, result => {
+                console.table(result)
+                mainMenu()
+            })
+        })
     })
 }
 
@@ -242,7 +259,11 @@ function mainMenu() {
         {
             name: "View Departments",
             run: viewDepartments
-        }, 
+        },
+        {
+            name: "View Department Budget",
+            run: viewDepartmentBudget
+        },
         { 
             name: "View Roles",
             run: viewRoles
