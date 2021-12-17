@@ -272,50 +272,17 @@ function deleteEmployee() {
 function mainMenu() {
 
     let mainMenuOptions = [
-        {
-            name: "View Employees",
-            run: viewEmployees
-        }, 
-        {
-            name: "View Employees by Manager",
-            run: viewEmployeesByManager
-        },
-        {
-            name: "View Departments",
-            run: viewDepartments
-        },
-        {
-            name: "View Department Budget",
-            run: viewDepartmentBudget
-        },
-        { 
-            name: "View Roles",
-            run: viewRoles
-        },
-        {
-            name: "Add Role",
-            run: addRole
-        },
-        {
-            name: "Add Department", 
-            run: addDepartment
-        },
-        {
-            name: "Add Employee",
-            run: addEmployee
-        },
-        {
-            name: "Update Employee Role",
-            run: updateEmployeeRole
-        },
-        {
-            name: "Update Employee Manager",
-            run: updateEmployeeManager
-        },
-        {
-            name: "Delete Employee",
-            run: deleteEmployee
-        }
+        { name: "View Employees", run: viewEmployees }, 
+        { name: "View Employees by Manager", run: viewEmployeesByManager  },
+        { name: "View Departments", run: viewDepartments },
+        { name: "View Department Budget", run: viewDepartmentBudget },
+        { name: "View Roles", run: viewRoles },
+        { name: "Add Role", run: addRole },
+        { name: "Add Department", run: addDepartment },
+        { name: "Add Employee", run: addEmployee },
+        { name: "Update Employee Role", run: updateEmployeeRole },
+        { name: "Update Employee Manager", run: updateEmployeeManager },
+        { name: "Delete Employee", run: deleteEmployee }
     ]
 
     const mainMenu = [
