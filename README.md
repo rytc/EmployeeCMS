@@ -9,6 +9,7 @@ gave me a chance to use more complex SQL queries and learn how to better structu
 ### Features:
 - Add departments, roles, and employees
 - View departments, roles, and employees
+- Delete departments, roles, and employees
 - Change an employee's role or manager
 - View employees by manager
 - View department budget
