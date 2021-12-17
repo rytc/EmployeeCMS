@@ -2,6 +2,7 @@ const mysql = require('mysql2')
 const inquirer = require('inquirer')
 const table = require('console.table')
 
+const Menu = require('./lib/Menu.js')
 const Department = require('./lib/Department.js')
 const Role = require('./lib/Role.js')
 const Employee = require('./lib/Employee.js')
@@ -10,86 +11,46 @@ const db = mysql.createConnection('mysql://root:bobby@localhost:3306/employee_db
 
 
 function viewEmployees() {
-    Employee.fetchAllWithRDM(db, employees => {
-        console.table(employees)
-        mainMenu()
-    })
+    Employee.fetchAllWithRDM(db)
+        .then(employees => {
+            console.table(employees)
+            mainMenu()
+        })
 }
 
 function viewEmployeesByManager() {
-    Employee.fetchAllManagers(db, managers => {
-        let menuOptions = [
-            {
-                type:"list",
-                name: "manager",
-                message: "Select a manager: ",
-                choices: []
-            }
-        ];
-        managers.forEach((mgr, index) => menuOptions[0].choices.push({value: mgr.id, name:`${mgr.getFirstName()} ${mgr.getLastName()}`}))
-
-        inquirer.prompt(menuOptions).then(res => {
-            Employee.fetchAllByManager(db, res.manager, employees => {
-                console.table(employees)
-                mainMenu()
-            })
-        })
-    })
+    Employee.fetchAllManagers(db)
+        .then(managers => Menu.selectEmployee(managers, 'Select a manager: ')
+        .then(manager => Employee.fetchAllByManager(db, manager.id))
+        .then(employees => {
+            console.table(employees)
+            mainMenu()
+        }))
 }
 
 function viewDepartments() {
-    Department.fetchAll(db, (departments) => {
-        console.table(departments)
-        mainMenu()
-    })
+    Department.fetchAll(db)
+        .then((departments) => {
+            console.table(departments)
+            mainMenu()
+        })
 }
 
 function viewRoles() {
-    Role.fetchAll(db, roles => {
-        console.table(roles)
-        mainMenu()
-    })
+    Role.fetchAll(db)
+        .then(roles => {
+            console.table(roles)
+            mainMenu()
+        })
 }
 
 function addRole() {
-    const roleMenu = [
-        {
-            type: 'input',
-            name: 'title',
-            message: "Role Name: "
-        },
-        {
-            type: 'input',
-            name: 'salary',
-            message: "Role Salary"
-        },
-        {
-            type: 'list',
-            name: 'department',
-            message: "Department",
-            choices: []
-        }
-    ]
-
-    Department.fetchAll(db, depts => {
-        depts.forEach(dept => {
-            roleMenu[2].choices.push(dept.name)
-        });
-
-        inquirer.prompt(roleMenu).then(req => {
-            let deptId = null
-            depts.forEach(dept => {
-                if(dept.name === req.department) {
-                    deptId = dept.id
-                    return
-                }
-            })
-
-            //console.log(`Creating Role ${req.title} with a salary of $${req.salary} in ${req.department} (id:${deptId})`);
-            Role.create(db, req.title, req.salary, deptId)
+    Department.fetchAll(db)
+        .then(departments => Menu.addRole(departments)
+        .then(newRole => {
+            Role.create(db, newRole.title, newRole.salary, newRole.department)
             mainMenu()
-        })
-    })
+        }))
 }
 
 function addDepartment() {
@@ -108,37 +69,20 @@ function addDepartment() {
 }
 
 function viewDepartmentBudget() {
-    const deptMenu = [
-        {
-            type: 'list',
-            name: 'department',
-            message: 'Select a department: ',
-            choices: []
-        }
-    ]
-
-    Department.fetchAll(db, departments => {
-        departments.forEach(dept => deptMenu[0].choices.push({value: dept.id, name:dept.name}));
-        inquirer.prompt(deptMenu).then(res => {
-            Role.fetchBudgetByDepartment(db, res.department, result => {
-                if(result[0].budget != null) {
-                    console.table(result)
-                } else {
-                    console.log("There are no employees in this department.")
-                }
-                mainMenu()
-            })
-        })
-    })
+    Department.fetchAll(db)
+        .then(departments => Menu.selectDepartment(departments)
+        .then(dept        => Role.fetchBudgetByDepartment(db, dept.id)
+        .then(budgets     => { if(budgets[0].budget != null) console.table(budgets); mainMenu() })))
 }
 
 function viewAllDepartmentBudgets() {
-    Role.fetchBudgets(db, result => {
-        if(result[0].budget != null) {
-            console.table(result)
-        }
-        mainMenu()
-    })
+    Role.fetchBudgets(db)
+        .then(result => {
+            if(result[0].budget != null) {
+                console.table(result)
+            }
+            mainMenu()
+        })
 }
 
 function addEmployee() {
@@ -165,27 +109,29 @@ function addEmployee() {
         }
     ]
 
-    Role.fetchAll(db, roles => {
-        roles.forEach(role => {
-            employeeMenu[2].choices.push({value: role.id, name: role.getTitle()})
-        })
-
-        const concatEmployeeName = (employee) => {
-            return `${employee.getFirstName()} ${employee.getLastName()}`
-        }
-
-        Employee.fetchAll(db, employees => {
-            employees.forEach(employee => {
-                employeeMenu[3].choices.push({ value:employee.id, name:concatEmployeeName(employee)})
+    Role.fetchAll(db)
+        .then(roles => {
+            roles.forEach(role => {
+                employeeMenu[2].choices.push({value: role.id, name: role.getTitle()})
             })
 
-            inquirer.prompt(employeeMenu).then(res => {
-                Employee.create(db, res.firstName, res.lastName, res.role, res.manager)
-                mainMenu()
-            })
-        })
+            const concatEmployeeName = (employee) => {
+                return `${employee.getFirstName()} ${employee.getLastName()}`
+            }
 
-    })
+            Employee.fetchAll(db)
+                .then(employees => {
+                    employees.forEach(employee => {
+                        employeeMenu[3].choices.push({ value:employee.id, name:concatEmployeeName(employee)})
+                    })
+
+                    inquirer.prompt(employeeMenu).then(res => {
+                        Employee.create(db, res.firstName, res.lastName, res.role, res.manager)
+                        mainMenu()
+                    })
+                })
+
+        })
 }
 
 function updateEmployeeRole() {
@@ -207,21 +153,23 @@ function updateEmployeeRole() {
         }
     ]
 
-    Employee.fetchAll(db, employees => {
-        employees.forEach(employee => menuEmployee[0].choices.push({value:employee.id, name:`${employee.getFirstName()} ${employee.getLastName()}`}))
-        Role.fetchAll(db, roles => {
-            roles.forEach(role => {
-                menuRole[0].choices.push({value: role.id, name:role.title})
-            })
+    Employee.fetchAll(db)
+        .then(employees => {
+            employees.forEach(employee => menuEmployee[0].choices.push({value:employee.id, name:`${employee.getFirstName()} ${employee.getLastName()}`}))
+            Role.fetchAll(db)
+                .then(roles => {
+                    roles.forEach(role => {
+                        menuRole[0].choices.push({value: role.id, name:role.title})
+                    })
 
-            inquirer.prompt(menuEmployee).then(empl => {
-                inquirer.prompt(menuRole).then(rl => {
-                    Employee.updateRole(db, empl.employee, rl.role)
-                    mainMenu()
+                    inquirer.prompt(menuEmployee).then(empl => {
+                        inquirer.prompt(menuRole).then(rl => {
+                            Employee.updateRole(db, empl.employee, rl.role)
+                            mainMenu()
+                        })
+                    })
                 })
-            })
         })
-    })
 }
 
 function updateEmployeeManager() {
@@ -243,29 +191,18 @@ function updateEmployeeManager() {
         }
     ]
 
-    Employee.fetchAll(db, employees => {
-        employees.forEach(employee => menuEmployee[0].choices.push({value:employee.id, name:`${employee.getFirstName()} ${employee.getLastName()}`}))
-        employees.forEach(employee => menuManager[0].choices.push({value:employee.id, name:`${employee.getFirstName()} ${employee.getLastName()}`}))
+    Employee.fetchAll(db)
+        .then(employees => {
+            employees.forEach(employee => menuEmployee[0].choices.push({value:employee.id, name:`${employee.getFirstName()} ${employee.getLastName()}`}))
+            employees.forEach(employee => menuManager[0].choices.push({value:employee.id, name:`${employee.getFirstName()} ${employee.getLastName()}`}))
 
-        inquirer.prompt(menuEmployee).then(empl => {
-            inquirer.prompt(menuManager).then(mgr => {
-                Employee.updateManager(db, empl.employee, mgr.manager)
-                mainMenu()
+            inquirer.prompt(menuEmployee).then(empl => {
+                inquirer.prompt(menuManager).then(mgr => {
+                    Employee.updateManager(db, empl.employee, mgr.manager)
+                    mainMenu()
+                })
             })
         })
-    })
-}
-
-async function confirm() {
-    let sure = await inquirer.prompt(
-        [{
-            type: 'list',
-            message: 'Are you sure?',
-            name: 'sure',
-            choices: [{value: true, name:'Yes'}, 
-                        {value:false, name:'No'}]
-        }])
-    return sure
 }
 
 function deleteEmployee() {
@@ -278,15 +215,15 @@ function deleteEmployee() {
         }
     ]
 
-    Employee.fetchAll(db, employees => {
-        employees.forEach(employee => menuOptions[0].choices.push({value: employee.id, name:`${employee.getFirstName()} ${employee.getLastName()}`}))
-        inquirer.prompt(menuOptions).then(res => {
-            confirm().then(sure => {
-                if(sure.sure) Employee.deleteEmployee(db, res.employee);
-                mainMenu()
-            })
+    Employee.fetchAll(db)
+        .then(employees => {
+            employees.forEach(employee => menuOptions[0].choices.push({value: employee.id, name:`${employee.getFirstName()} ${employee.getLastName()}`}))
+            inquirer.prompt(menuOptions).then(res => Menu.confirm()
+                .then(sure => {
+                    if(sure.answer) Employee.deleteEmployee(db, res.employee);
+                    mainMenu()
+                }))
         })
-    })
 }
 
 function deleteRole() {
@@ -299,48 +236,38 @@ function deleteRole() {
         }
     ]
 
-    Role.fetchAll(db, roles => {
-        roles.forEach(role => menuOptions[0].choices.push({value: role.id, name: role.title}))
-        inquirer.prompt(menuOptions).then(res => {
-            confirm().then(sure => {
-                if(sure.sure) {
-                    Employee.removeRoleFromAll(db, res.role);
-                    Role.deleteRole(db, res.role);
-                }
-                mainMenu()
-            })        
+    Role.fetchAll(db)
+        .then(roles => {
+            roles.forEach(role => menuOptions[0].choices.push({value: role.id, name: role.title}))
+            inquirer.prompt(menuOptions).then(res => {
+                Menu.confirm().then(sure => {
+                    if(sure.sure) {
+                        Employee.removeRoleFromAll(db, res.role);
+                        Role.deleteRole(db, res.role);
+                    }
+                    mainMenu()
+                })        
+            })
         })
-    })
 }
 
 function deleteDepartment() {
-    const menuOptions = [
-        {
-            type: 'list',
-            message: 'Which department do you want to delete? (This will also remove the roles)',
-            name: 'department',
-            choices: []
-        }
-    ]
+    Department.fetchAll(db)
+        .then(departments => Menu.selectDepartment(departments, 'Select a department to delete, this will also delete the roles.')
+        .then(dept => Menu.confirm()
+        .then(sure => { if(sure.answer) {
+            Role.fetchRolesByDepartment(db, dept.id)
+            .then(roles => {
+                roles.forEach(role => {
+                    Employee.removeRoleFromAll(db, role.id);
+                })
+            });
+            
+            Role.deleteRoleByDepartment(db, dept.id)
+            Department.deleteDepartment(db, dept.id)
 
-    Department.fetchAll(db, departments => {
-        departments.forEach(dept => menuOptions[0].choices.push({value: dept.id, name: dept.name}))
-        inquirer.prompt(menuOptions).then(res => {
-            confirm().then(sure => {
-                if(sure.sure) {
-                    Role.fetchRolesByDepartment(db, res.department, roles => {
-                        roles.forEach(role => {
-                            URLSearchParams.removeRoleFromAll(db, role.id);
-                        })
-                    });
-                    
-                    Role.deleteRoleByDepartment(db, res.department)
-                    Department.deleteDepartment(db, res.department)
-                }
-                mainMenu()
-            })        
-        })
-    })
+            mainMenu()
+        }})))
 }
 
 function mainMenu() {
