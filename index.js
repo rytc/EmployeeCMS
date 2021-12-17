@@ -16,6 +16,10 @@ function viewEmployees() {
     })
 }
 
+function viewEmployeesByManager() {
+    mainMenu()
+}
+
 function viewDepartments() {
     Department.fetchAll(db, (departments) => {
         console.table(departments)
@@ -201,38 +205,60 @@ function updateEmployeeManager() {
     })
 }
 
+
+
 function mainMenu() {
+
+    let mainMenuOptions = [
+        {
+            name: "View Employees",
+            run: viewEmployees
+        }, 
+        {
+            name: "View Employees by Manager",
+            run: viewEmployeesByManager
+        },
+        {
+            name: "View Departments",
+            run: viewDepartments
+        }, 
+        { 
+            name: "View Roles",
+            run: viewRoles
+        },
+        {
+            name: "Add Role",
+            run: addRole
+        },
+        {
+            name: "Add Department", 
+            run: addDepartment
+        },
+        {
+            name: "Add Employee",
+            run: addEmployee
+        },
+        {
+            name: "Update Employee Role",
+            run: updateEmployee
+        },
+        {
+            name: "Update Employee Manager",
+            run: updateEmployeeManager
+        }
+    ]
+
     const mainMenu = [
         {
             type: "list",
             name: "menuOption",
             message: "What would you like to do?",
-            choices: [
-                {value: 0, name: "View Employees"},
-                {value: 1, name: "View Departments"},
-                {value: 2, name: "View Roles"},
-                {value: 3, name: "Add Role"},
-                {value: 4, name: "Add Department"},
-                {value: 5, name: "Add Employee"},
-                {value: 6, name: "Update Employee Role"},
-                {value: 7, name: "Update Employee Manager"}
-            ]
+            choices: []
         }
     ]
 
-    inquirer.prompt(mainMenu).then(res => {
-        switch(res.menuOption) {
-            case 0: viewEmployees(); break
-            case 1: viewDepartments(); break
-            case 2: viewRoles(); break
-            case 3: addRole(); break
-            case 4: addDepartment(); break
-            case 5: addEmployee(); break
-            case 6: updateEmployeeRole(); break
-            case 7: updateEmployeeManager(); break;
-        }
-    });
-
+    mainMenuOptions.forEach((opt, index) => mainMenu.choices.push({value:index, name: opt.name}));
+    inquirer.prompt(mainMenu).then(res => mainMenuOptions[res.menuOption].run());
 }
 
 
