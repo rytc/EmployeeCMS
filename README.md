@@ -12,7 +12,7 @@ gave me a chance to use more complex SQL queries and learn how to better structu
 - Delete departments, roles, and employees
 - Change an employee's role or manager
 - View employees by manager
-- View department budget
+- View department budget, view all department budgets
 
 ## Table of Contents
 - [Installation](#Installation)
@@ -24,6 +24,7 @@ gave me a chance to use more complex SQL queries and learn how to better structu
 
 ## Installation
 `git clone https://github.com/rytc/EmployeeCMS`
+- Requires MySQL installed and initialized with `db_structure.sql`
 
 ## Usage
 `npm start` or `node index.js`

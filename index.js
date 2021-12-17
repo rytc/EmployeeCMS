@@ -132,6 +132,15 @@ function viewDepartmentBudget() {
     })
 }
 
+function viewAllDepartmentBudgets() {
+    Role.fetchBudgets(db, result => {
+        if(result[0].budget != null) {
+            console.table(result)
+        }
+        mainMenu()
+    })
+}
+
 function addEmployee() {
     const employeeMenu = [
         {
@@ -341,6 +350,7 @@ function mainMenu() {
         { name: "View Employees by Manager", run: viewEmployeesByManager  },
         { name: "View Departments", run: viewDepartments },
         { name: "View Department Budget", run: viewDepartmentBudget },
+        { name: "View All Budgets", run: viewAllDepartmentBudgets },
         { name: "View Roles", run: viewRoles },
         { name: "Add Role", run: addRole },
         { name: "Add Department", run: addDepartment },

@@ -25,7 +25,8 @@ CREATE TABLE employee (
     FOREIGN KEY(manager_id) REFERENCES employee(id)
 );
 
-
+/*
+Testing queries
 USE employee_db;
 SELECT 
    employee.id, 
@@ -51,7 +52,14 @@ department.name AS department
 FROM role
 LEFT JOIN department ON department.id = role.department_id
 WHERE role.department_id = 3
-    
+*/
+
+use employee_db;
+SELECT SUM(role.salary),
+department.name AS department
+FROM role
+LEFT JOIN department ON role.department_id = department.id
+GROUP BY role.department_id
     
     
     
