@@ -241,7 +241,8 @@ function deleteRole() {
             roles.forEach(role => menuOptions[0].choices.push({value: role.id, name: role.title}))
             inquirer.prompt(menuOptions).then(res => {
                 Menu.confirm().then(sure => {
-                    if(sure.sure) {
+                    if(sure.answer) {
+                        console.log(res);
                         Employee.removeRoleFromAll(db, res.role);
                         Role.deleteRole(db, res.role);
                     }
