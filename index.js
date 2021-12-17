@@ -243,6 +243,17 @@ function updateEmployeeManager() {
     })
 }
 
+async function confirm() {
+    let sure = await inquirer.prompt(
+        [{
+            type: 'list',
+            message: 'Are you sure?',
+            name: 'sure',
+            choices: ['Yes', 'No']
+        }])
+    return sure
+}
+
 function deleteEmployee() {
     const menuOptions = [
         {
@@ -256,15 +267,32 @@ function deleteEmployee() {
     Employee.fetchAll(db, employees => {
         employees.forEach(employee => menuOptions[0].choices.push({value: employee.id, name:`${employee.getFirstName()} ${employee.getLastName()}`}))
         inquirer.prompt(menuOptions).then(res => {
-            inquirer.prompt([{
-                type: 'list',
-                message: 'Are you sure?',
-                name: 'sure',
-                choices: ['Yes', 'No']
-            }]).then(sure => {
+            confirm().then(sure => {
                 if(sure.sure === 'Yes') Employee.deleteEmployee(db, res.employee);
                 mainMenu()
             })
+        })
+    })
+}
+
+function deleteRole() {
+    const menuOptions = [
+        {
+            type: 'list',
+            message: 'Which role do you want to delete? (This will also remove the role from the employees)',
+            name: 'role',
+            choices: []
+        }
+    ]
+
+    Role.fetchAll(db, roles => {
+        roles.forEach(role => menuOptions[0].choices.push({value: role.id, name: role.title}))
+        inquirer.prompt(menuOptions).then(res => {
+            confirm().then(sure => {
+                Employee.removeRoleFromAll(db, res.role);
+                Role.deleteRole(db, res.role);
+                mainMenu()
+            })        
         })
     })
 }
@@ -282,7 +310,8 @@ function mainMenu() {
         { name: "Add Employee", run: addEmployee },
         { name: "Update Employee Role", run: updateEmployeeRole },
         { name: "Update Employee Manager", run: updateEmployeeManager },
-        { name: "Delete Employee", run: deleteEmployee }
+        { name: "Delete Employee", run: deleteEmployee },
+        { name: "Delete Role", run: deleteRole }
     ]
 
     const mainMenu = [

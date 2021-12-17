@@ -1,35 +1,43 @@
 
-  # EmployeeCMS
-  [![License: Unlicense](https://img.shields.io/badge/license-Unlicense-blue.svg)](http://unlicense.org/)
+# EmployeeCMS
+[![License: Unlicense](https://img.shields.io/badge/license-Unlicense-blue.svg)](http://unlicense.org/)
 
-  ## Description
-  A simple command line NodeJS application to manage employees by role, department and by manager. The data is backed by MySQL.
+## Description
+A simple command line NodeJS application to manage employees by role, department and by manager. The data is backed by MySQL. While this project was for homework, it 
+gave me a chance to use more complex SQL queries and learn how to better structure a larger Javascript program.
 
-  ## Table of Contents
-  - [Installation](#Installation)
-  - [Usage](#Usage)
-  - [License](#License)
-  - [Contributing](#Contributing)
-  - [Tests](#Test-Instructions)
-  - [Questions](#Questions)
+### Features:
+- Add departments, roles, and employees
+- View departments, roles, and employees
+- Change an employee's role or manager
+- View employees by manager
+- View department budget
 
-  ## Installation
-  `git clone https://github.com/rytc/EmployeeCMS`
+## Table of Contents
+- [Installation](#Installation)
+- [Usage](#Usage)
+- [License](#License)
+- [Contributing](#Contributing)
+- [Tests](#Test-Instructions)
+- [Questions](#Questions)
 
-  ## Usage
-  `npm start` or `node index.js`
-  
-  ## License
-  This project is covered under the The Unlicense
+## Installation
+`git clone https://github.com/rytc/EmployeeCMS`
 
-  ## Contributing
-  No contributions are accepted.
+## Usage
+`npm start` or `node index.js`
 
-  ## Tests
-  No tests
+## License
+This project is covered under the The Unlicense
 
-  ## Questions
-  - Github is [rytc](https://github.com/rytc)
-  - Email is [ryan@rytc.io](ryan@rytc.io)
+## Contributing
+No contributions are accepted.
+
+## Tests
+No tests
+
+## Questions
+- Github is [rytc](https://github.com/rytc)
+- Email is [ryan@rytc.io](ryan@rytc.io)
 
   
