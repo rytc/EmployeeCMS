@@ -243,7 +243,31 @@ function updateEmployeeManager() {
     })
 }
 
+function deleteEmployee() {
+    const menuOptions = [
+        {
+            type: 'list',
+            message: 'Which employee do you want to delete?',
+            name: 'employee',
+            choices: []
+        }
+    ]
 
+    Employee.fetchAll(db, employees => {
+        employees.forEach(employee => menuOptions[0].choices.push({value: employee.id, name:`${employee.getFirstName()} ${employee.getLastName()}`}))
+        inquirer.prompt(menuOptions).then(res => {
+            inquirer.prompt([{
+                type: 'list',
+                message: 'Are you sure?',
+                name: 'sure',
+                choices: ['Yes', 'No']
+            }]).then(sure => {
+                if(sure.sure === 'Yes') Employee.deleteEmployee(db, res.employee);
+                mainMenu()
+            })
+        })
+    })
+}
 
 function mainMenu() {
 
@@ -287,6 +311,10 @@ function mainMenu() {
         {
             name: "Update Employee Manager",
             run: updateEmployeeManager
+        },
+        {
+            name: "Delete Employee",
+            run: deleteEmployee
         }
     ]
 
